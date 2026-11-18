@@ -1,0 +1,28 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=Tuboteca
+Comment=Catálogo local de canales YouTube sin publicidad
+Exec=/home/jma/tuboteca/tuboteca-control.sh launch
+Icon=tuboteca
+Terminal=false
+Categories=Network;
+StartupNotify=true
+X-SingleInstance=true
+Actions=Start;Stop;Restart;Brave
+
+[Desktop Action Start]
+Name=Iniciar servidor
+Exec=/home/jma/tuboteca/tuboteca-control.sh start
+
+[Desktop Action Stop]
+Name=Detener servidor
+Exec=/home/jma/tuboteca/tuboteca-control.sh stop
+
+[Desktop Action Restart]
+Name=Reiniciar servidor
+Exec=/home/jma/tuboteca/tuboteca-control.sh restart
+
+[Desktop Action Brave]
+Name=Abrir en Brave
+Exec=/home/jma/tuboteca/tuboteca-control.sh brave

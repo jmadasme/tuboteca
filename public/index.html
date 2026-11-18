@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>Tuboteca — tu catálogo de YouTube</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23ff3b30'/%3E%3Cpath d='M26 19l20 13-20 13z' fill='white'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <header class="brand">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path d="M9 6.5 18 12l-9 5.5z" fill="currentColor"/></svg>
+        </span>
+        <div class="brand-text">
+          <h1>Tuboteca</h1>
+          <p>tu catálogo de YouTube</p>
+        </div>
+        <button id="open-add" class="icon-btn" type="button" title="Añadir canal" aria-label="Añadir canal">
+          <svg viewBox="0 0 24 24" width="18" height="18"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </header>
+
+      <form id="add-form" class="add-form" autocomplete="off">
+        <div class="add-field">
+          <svg class="add-icon" viewBox="0 0 24 24" width="16" height="16" aria-hidden="true"><path d="M10.5 13.5 13.5 10.5M8 16l-1.5 1.5a3.5 3.5 0 0 1-5-5L5 9a3.5 3.5 0 0 1 5 0M16 8l1.5-1.5a3.5 3.5 0 0 1 5 5L19 15a3.5 3.5 0 0 1-5 0" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          <input id="add-input" type="text" placeholder="@usuario o enlace del canal" spellcheck="false" aria-label="Añadir canal por @usuario o enlace">
+          <button id="add-submit" type="submit" title="Añadir" aria-label="Añadir canal">
+            <svg class="plus" viewBox="0 0 24 24" width="18" height="18"><path d="M12 5v14M5 12h14" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"/></svg>
+            <span class="spinner" aria-hidden="true"></span>
+          </button>
+        </div>
+        <p id="add-hint" class="add-hint">Pega <code>@handle</code>, el enlace del canal o el de cualquier vídeo suyo.</p>
+      </form>
+
+      <div class="list-head">
+        <span>Biblioteca</span>
+        <div class="list-head-actions">
+          <span id="channel-count" class="count">0</span>
+          <button id="add-node" class="icon-btn mini" type="button" title="Nueva carpeta" aria-label="Nueva carpeta">
+            <svg viewBox="0 0 24 24" width="15" height="15"><path d="M3 7a2 2 0 0 1 2-2h4l2 2h8a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/><path d="M12 11v5M9.5 13.5h5" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <nav id="channel-list" class="channel-list" aria-label="Canales"></nav>
+
+      <footer class="sidebar-foot">
+        <button id="refresh-all" class="btn btn-ghost btn-block" type="button">
+          <svg class="refresh-icon" viewBox="0 0 24 24" width="15" height="15"><path d="M20 11a8 8 0 1 0-2.3 6.3M20 5v6h-6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Actualizar todo
+        </button>
+        <div class="legend">
+          <span><i class="dot green"></i> último vídeo visto</span>
+          <span><i class="dot red"></i> hay algo nuevo</span>
+        </div>
+      </footer>
+    </aside>
+
+    <main id="main" class="main" tabindex="-1"></main>
+  </div>
+
+  <div id="node-popover" class="popover" hidden></div>
+
+  <div id="dialog-backdrop" class="dialog-backdrop" hidden>
+    <form id="dialog-form" class="dialog">
+      <h3 id="dialog-title">Nueva carpeta</h3>
+      <p id="dialog-desc" class="dialog-desc"></p>
+      <label id="dialog-input-field" class="dialog-field">
+        <span id="dialog-input-label">Nombre</span>
+        <input id="dialog-input" type="text" maxlength="60" autocomplete="off" spellcheck="false">
+      </label>
+      <label id="dialog-select-field" class="dialog-field" hidden>
+        <span id="dialog-select-label">Mover a</span>
+        <select id="dialog-select"></select>
+      </label>
+      <div class="dialog-actions">
+        <button type="button" id="dialog-cancel" class="btn">Cancelar</button>
+        <button type="submit" id="dialog-confirm" class="btn btn-primary">Crear</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="toasts" class="toasts" role="status" aria-live="polite"></div>
+  <script src="/app.js"></script>
+</body>
+</html>

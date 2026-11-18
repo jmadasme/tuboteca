@@ -1,0 +1,13 @@
+{
+  "channels": [
+    {"id":"UCHnyfMqiRRG1u-2MsSQLbXA","title":"Veritasium","avatar":"","addedAt":1760000000000,"watched":{},"nodeId":"n_ciencia01"},
+    {"id":"UC9-y-6csu5WGm29I7JiwpnA","title":"Computerphile","avatar":"","addedAt":1760000100000,"watched":{},"nodeId":"n_ia01"},
+    {"id":"UCYO_jab_esuFRV4b17AJtAw","title":"3Blue1Brown","avatar":"","addedAt":1760000200000,"watched":{},"nodeId":"n_ciencia01"},
+    {"id":"UCsXVk37bltHxD1rDPwtNM8Q","title":"Kurzgesagt","avatar":"","addedAt":1760000300000,"watched":{},"nodeId":null}
+  ],
+  "nodes": [
+    {"id":"n_ciencia01","name":"Ciencia","parentId":null,"createdAt":1760000000000},
+    {"id":"n_ia01","name":"IA","parentId":"n_ciencia01","createdAt":1760000050000},
+    {"id":"n_electro01","name":"Electrónica","parentId":null,"createdAt":1760000060000}
+  ]
+}

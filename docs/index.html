@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Tuboteca · jmadasme</title>
+<meta name="description" content="Tuboteca: servidor Node sin dependencias, árbol de canales, caché de feed y una interfaz de escritorio para ordenar lo que ves."/>
+<meta property="og:title" content="Tuboteca · jmadasme"/>
+<meta property="og:description" content="Tuboteca: servidor Node sin dependencias, árbol de canales, caché de feed y una interfaz de escritorio para ordenar lo que ves."/>
+<meta property="og:type" content="website"/>
+<meta property="og:image" content="assets/og.png"/>
+<meta name="twitter:card" content="summary_large_image"/>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="assets/community.css?v=1"/>
+<style>
+:root{
+  --bg:#06141b; --panel:#0b222b; --panel2:#0e2b35; --line:rgba(230,240,243,.12);
+  --text:#e6f0f3; --muted:#9db4bd; --accent:#2A9D8F; --accent2:#457B9D;
+  --warn:#E9C46A; --danger:#E76F51; --ok:#57CC99;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+  --sans:"Space Grotesk",Inter,system-ui,-apple-system,Segoe UI,sans-serif;
+  --max:1120px; --radius:18px;
+}
+*{box-sizing:border-box} html{scroll-behavior:smooth}
+body{margin:0;background:var(--bg);color:var(--text);font-family:var(--sans);line-height:1.65;
+  background-image:radial-gradient(ellipse at 12% -10%,rgba(42,157,143,.18),transparent 42%),
+  radial-gradient(ellipse at 100% 0%,rgba(69,123,157,.16),transparent 38%),
+  linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:auto,auto,64px 64px,64px 64px;background-attachment:fixed}
+a{color:var(--accent);text-decoration:none} a:hover{color:#7fe0d2}
+.wrap{max-width:var(--max);margin:0 auto;padding:0 24px}
+.nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);background:rgba(6,20,27,.82);border-bottom:1px solid var(--line)}
+.nav-inner{max-width:var(--max);margin:0 auto;padding:14px 24px;display:flex;align-items:center;gap:22px;justify-content:space-between}
+.brand{display:flex;align-items:center;gap:10px;color:var(--text);font-weight:700;letter-spacing:-.02em}
+.brand-mark{width:30px;height:30px;border:1px solid rgba(42,157,143,.55);border-radius:9px;display:grid;place-items:center;background:rgba(42,157,143,.10)}
+.brand-mark svg{width:18px;height:18px;stroke:var(--accent);fill:none;stroke-width:1.7}
+.brand small{display:block;font-family:var(--mono);font-size:10px;color:var(--muted);font-weight:400;letter-spacing:.08em}
+.nav-links{display:flex;align-items:center;gap:18px;font-size:14px;color:var(--muted);flex-wrap:wrap}
+.nav-links a{color:var(--muted)} .nav-links a:hover{color:var(--text)}
+.btn{display:inline-flex;align-items:center;gap:8px;border:1px solid var(--line);border-radius:11px;padding:10px 16px;font-weight:600;font-size:14px;color:var(--text);background:rgba(255,255,255,.03)}
+.btn:hover{border-color:rgba(42,157,143,.55);color:var(--text)}
+.btn-primary{background:linear-gradient(135deg,var(--accent),#1f7f76);border-color:transparent;color:#041114}
+.btn-primary:hover{filter:brightness(1.08);color:#041114}
+.btn-ghost{background:transparent}
+.hero{padding:76px 0 46px;position:relative;overflow:hidden}
+.hero .wrap{display:grid;grid-template-columns:1.15fr .85fr;gap:38px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
+h1{font-size:clamp(38px,5.2vw,68px);line-height:1.02;letter-spacing:-.045em;margin:0 0 18px;
+  background:linear-gradient(120deg,#fff 10%,#bde9e3 55%,#7fb9d6 95%);-webkit-background-clip:text;background-clip:text;color:transparent}
+.lead{font-size:clamp(17px,1.5vw,21px);color:#c3d6dc;max-width:62ch;margin:0 0 22px}
+.hero-actions{display:flex;gap:12px;flex-wrap:wrap;margin:26px 0 22px}
+.badges{display:flex;gap:8px;flex-wrap:wrap}
+.badge{font-family:var(--mono);font-size:11px;border:1px solid var(--line);border-radius:999px;padding:5px 10px;color:var(--muted);background:rgba(255,255,255,.02)}
+.visual{position:relative}
+.visual img{width:100%;border-radius:var(--radius);border:1px solid var(--line);box-shadow:0 28px 70px rgba(0,0,0,.45);display:block}
+.visual:after{content:"";position:absolute;inset:auto -10% -16% 18%;height:60%;background:radial-gradient(ellipse,rgba(42,157,143,.20),transparent 68%);filter:blur(30px);z-index:-1}
+.stats{border-top:1px solid var(--line);border-bottom:1px solid var(--line);background:rgba(11,34,43,.55)}
+.stats-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:0;padding:22px 0}
+.stat{padding:4px 24px;border-right:1px solid var(--line)} .stat:last-child{border-right:0}
+.stat-num{font-size:27px;font-weight:700;letter-spacing:-.03em} .stat-label{font-family:var(--mono);font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.1em}
+.section{padding:76px 0;border-bottom:1px solid var(--line)}
+.section.tight{padding:56px 0}
+.section-head{max-width:760px;margin-bottom:30px}
+.kicker{font-family:var(--mono);font-size:11px;letter-spacing:.15em;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+h2{font-size:clamp(28px,3.4vw,43px);line-height:1.08;letter-spacing:-.035em;margin:0 0 12px}
+.section-sub{color:var(--muted);font-size:17px;margin:0}
+.rich p{color:#c3d6dc;margin:0 0 16px;font-size:16.5px}
+.callout{border-left:3px solid var(--accent);background:rgba(42,157,143,.07);padding:14px 18px;border-radius:0 12px 12px 0;color:#cfe6e2;margin:20px 0}
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.grid3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
+.card{background:linear-gradient(180deg,rgba(14,43,53,.86),rgba(11,34,43,.86));border:1px solid var(--line);border-radius:var(--radius);padding:20px}
+.card h3{margin:0 0 8px;font-size:18px;letter-spacing:-.02em}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.card .num{font-family:var(--mono);font-size:11px;color:var(--accent);letter-spacing:.12em;display:block;margin-bottom:10px}
+.steps{counter-reset:s;display:grid;gap:12px}
+.step{display:grid;grid-template-columns:46px 1fr;gap:14px;padding:16px 18px;border:1px solid var(--line);border-radius:14px;background:rgba(11,34,43,.55)}
+.step:before{counter-increment:s;content:counter(s,decimal-leading-zero);font-family:var(--mono);color:var(--accent);font-size:13px;padding-top:3px}
+.step h3{margin:0 0 4px;font-size:16px} .step p{margin:0;color:var(--muted);font-size:14.5px}
+.flow{display:flex;align-items:stretch;gap:10px;flex-wrap:wrap;margin:22px 0}
+.node{flex:1 1 150px;min-width:140px;border:1px solid var(--line);border-radius:14px;padding:14px;background:rgba(14,43,53,.7);position:relative}
+.node b{display:block;font-size:14px;margin-bottom:4px} .node span{font-size:12px;color:var(--muted);font-family:var(--mono)}
+.arrow{align-self:center;color:var(--accent);font-size:20px;font-family:var(--mono)}
+.gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:18px}
+.gallery figure{margin:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--panel)}
+.gallery img{width:100%;display:block;border-bottom:1px solid var(--line)}
+.gallery figcaption{padding:10px 14px;font-size:13px;color:var(--muted)}
+.gallery .wide{grid-column:1/-1}
+.stack{display:flex;gap:8px;flex-wrap:wrap;margin:14px 0 22px}
+.chip{font-family:var(--mono);font-size:11.5px;border:1px solid rgba(42,157,143,.35);border-radius:999px;padding:6px 11px;color:#bfe6df;background:rgba(42,157,143,.07)}
+.doctable{width:100%;border-collapse:collapse;font-size:14.5px}
+.doctable th,.doctable td{text-align:left;padding:12px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+.doctable th{font-family:var(--mono);font-size:11px;text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.doctable td:first-child{color:var(--text);font-weight:600}
+.limits{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.limit{border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(231,111,81,.045)}
+.limit b{display:block;margin-bottom:5px;color:#f2b8a8} .limit span{color:var(--muted);font-size:14px}
+.cta{padding:70px 0;background:linear-gradient(120deg,rgba(42,157,143,.12),rgba(69,123,157,.10));border-top:1px solid var(--line)}
+.cta .wrap{display:flex;align-items:center;justify-content:space-between;gap:24px;flex-wrap:wrap}
+.cta h2{margin:0 0 6px} .cta p{margin:0;color:var(--muted)}
+.footer{padding:28px 0;color:var(--muted);font-size:13px}
+.footer .wrap{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+code{font-family:var(--mono);font-size:.92em;background:rgba(255,255,255,.06);padding:2px 6px;border-radius:6px}
+pre{font-family:var(--mono);font-size:13px;background:#041016;border:1px solid var(--line);border-radius:12px;padding:16px;overflow:auto;color:#bfe6df}
+@media (max-width:900px){.hero .wrap{grid-template-columns:1fr}.visual{order:-1}.grid3{grid-template-columns:1fr}.stats-grid{grid-template-columns:repeat(2,1fr)}.stat:nth-child(2){border-right:0}.stat{padding:12px 18px}}
+@media (max-width:680px){.nav-links{display:none}.grid2,.gallery,.limits{grid-template-columns:1fr}.section{padding:54px 0}h1{font-size:42px}.stats-grid{grid-template-columns:1fr 1fr}.cta .wrap{display:block}.cta .btn{margin-top:16px}}
+</style>
+<link href="rec/player.css?v=1" rel="stylesheet"/>
+</head>
+<body>
+<header class="nav"><div class="nav-inner">
+  <a class="brand" href="/"><span class="brand-mark"><svg viewBox="0 0 24 24"><path d="M4 7h16M4 12h10M4 17h16"/></svg></span><span>Tuboteca<small>Software &amp; IA · jmadasme</small></span></a>
+  <nav class="nav-links" aria-label="Navegación">
+    <a href="#problema">Problema</a><a href="#como">Cómo funciona</a><a href="#arquitectura">Arquitectura</a>
+    <a href="#capturas">Capturas</a><a href="#stack">Stack</a><a href="#video">Video</a>
+<a href="#docs">Documentación</a><a href="#comunidad">Comunidad</a>
+    <a class="btn btn-ghost" href="https://github.com/jmadasme/tuboteca" target="_blank" rel="noopener">GitHub</a>
+  </nav>
+</div></header>
+<main>
+<section class="hero"><div class="wrap">
+  <div>
+    <div class="eyebrow">Software &amp; IA · biblioteca personal</div>
+    <h1>Tu YouTube, ordenado como un escritorio.</h1>
+    <p class="lead">Un catálogo local de canales y videos con carpetas anidadas, estados visto/no visto y un reproductor que no depende de la API oficial.</p>
+    <div class="hero-actions">
+      <a class="btn btn-primary" href="https://github.com/jmadasme/tuboteca" target="_blank" rel="noopener">Ver el repositorio</a>
+      <a class="btn" href="#docs">Leer documentación</a>
+    </div>
+    <div class="badges"><span class="badge">Node.js</span><span class="badge">0 dependencias</span><span class="badge">Sin API oficial</span><span class="badge">100 % local</span></div>
+  </div>
+  <div class="visual"><img src="assets/screenshots/tuboteca.webp" alt="Interfaz de Tuboteca con canales y árbol de carpetas"/></div>
+</div></section>
+<section class="stats"><div class="wrap stats-grid"><div class="stat"><div class="stat-num">0</div><div class="stat-label">dependencias</div></div>
+<div class="stat"><div class="stat-num">3</div><div class="stat-label">estados</div></div>
+<div class="stat"><div class="stat-num">10 min</div><div class="stat-label">caché</div></div>
+<div class="stat"><div class="stat-num">1</div><div class="stat-label">servidor</div></div></div></section>
+<section class="section" id="problema"><div class="wrap">
+  <div class="section-head"><div class="kicker">01 — El problema</div><h2>Suscribirse no es organizar.</h2><p class="section-sub">YouTube guarda canales, pero no te dice qué viste, qué te falta ni cómo agruparlo según tu criterio.</p></div>
+  <div class="rich"><p>La lista de suscripciones crece y se vuelve un flujo infinito. Los videos importantes se pierden entre recomendaciones. Y no hay una forma simple de crear carpetas propias, anidadas, con estados de lectura.</p>
+<p>Tuboteca propone un escritorio local: un servidor Node que lee los canales que tú eliges, guarda un árbol de carpetas y recuerda qué videos ya viste.</p>
+<p>No usa la API oficial ni requiere una clave. Lee la página pública del canal, extrae `ytInitialData` y, si cambia, intenta la API interna de YouTube como respaldo.</p><div class="callout">El repositorio incluye canales de demostración. Tus suscripciones e historiales reales no se publican.</div></div>
+</div></section>
+<section class="section" id="como"><div class="wrap">
+  <div class="section-head"><div class="kicker">02 — Cómo funciona</div><h2>Canales, videos y tres estados.</h2><p class="section-sub">El servidor hace el trabajo pesado; la interfaz solo muestra el árbol y recuerda el estado.</p></div>
+  <div class="steps"><div class="step"><div><h3>Agregar</h3><p>Acepta un handle, una URL de canal o un video; resuelve el ID y guarda el canal.</p></div></div>
+<div class="step"><div><h3>Leer el feed</h3><p>Descarga la página pública, extrae `ytInitialData` y recorre los videos publicados.</p></div></div>
+<div class="step"><div><h3>Parsear</h3><p>Convierte la estructura de YouTube en una lista plana de videos con título, fecha e ID.</p></div></div>
+<div class="step"><div><h3>Cachear</h3><p>Guarda el resultado durante 10 minutos y conserva una copia stale si la red falla.</p></div></div>
+<div class="step"><div><h3>Marcar</h3><p>El estado visto/no visto se guarda por video y se refleja en el punto de cada canal.</p></div></div></div>
+</div></section>
+<section class="section" id="arquitectura"><div class="wrap">
+  <div class="section-head"><div class="kicker">03 — Arquitectura</div><h2>Un servidor pequeño, una interfaz de escritorio.</h2><p class="section-sub">Node sin dependencias mantiene el estado; el navegador solo pinta y envía acciones.</p></div>
+  <div class="flow"><div class="node"><b>Navegador</b><span>public/</span></div><div class="arrow">→</div><div class="node"><b>Node HTTP</b><span>server.js</span></div><div class="arrow">→</div><div class="node"><b>YouTube</b><span>HTML público</span></div><div class="arrow">→</div><div class="node"><b>Estado</b><span>JSON</span></div></div>
+  <div class="grid3"><div class="card"><span class="num">A</span><h3>Sin API oficial</h3><p>No hay OAuth ni cuota. Se lee la página pública y se usa Innertube como respaldo.</p></div>
+<div class="card"><span class="num">B</span><h3>Caché con stale</h3><p>Si YouTube no responde, se muestra la última copia válida en vez de una pantalla vacía.</p></div>
+<div class="card"><span class="num">C</span><h3>Escritorio propio</h3><p>Carpetas anidadas, arrastrar canales y estados por video.</p></div></div>
+</div></section>
+<section class="section" id="capturas"><div class="wrap">
+  <div class="section-head"><div class="kicker">04 — Capturas</div><h2>La biblioteca, en una pantalla.</h2><p class="section-sub">Barra lateral, árbol de carpetas y panel de videos comparten el mismo espacio.</p></div>
+  <div class="gallery"><figure class="wide"><img src="assets/screenshots/tuboteca.webp" alt="Interfaz de Tuboteca" loading="lazy"><figcaption>Biblioteca con canales demo, árbol de carpetas y panel de videos.</figcaption></figure></div>
+</div></section>
+<section class="section" id="stack"><div class="wrap">
+  <div class="section-head"><div class="kicker">05 — Stack</div><h2>Cero dependencias, todo explícito.</h2><p class="section-sub">Un solo archivo de servidor y una interfaz vanilla para que sea fácil de auditar.</p></div>
+  <div class="stack"><span class="chip">Node.js</span><span class="chip">http</span><span class="chip">fs</span><span class="chip">JavaScript</span><span class="chip">HTML/CSS</span></div>
+  <div class="rich"><p>El servidor usa únicamente módulos nativos de Node: `http`, `fs`, `path` y `url`. No hay `npm install`. El frontend es JavaScript vanilla y CSS propio. El estado se guarda en JSON y se escribe con `rename` atómico para evitar corrupciones.</p></div>
+</div></section>
+
+<section class="section tight rec-section" id="video" style="--accent:#2E7DFF;--accent2:#14F195">
+<div class="wrap">
+<div class="rec-kicker">REC · VIDEO · 2:55</div>
+<h2 class="rec-h2">Tuboteca: tu catálogo de YouTube, en local</h2>
+<p class="rec-lead">Un catálogo de canales de YouTube con estética de escritorio: puntos verdes y rojos, carpetas anidadas y un reproductor integrado. El video recorre el servidor Node sin dependencias, la resolución de enlaces, las tres vías para leer el feed, la caché de diez minutos y la persistencia atómica en JSON.</p>
+<div class="rec-banner">
+<span class="rec-banner-icon">📋</span>
+<strong>Puedes copiar y pegar los comandos del video desde el video !!!</strong>
+<span>Pausá, seleccioná el texto de la terminal y copiá.</span>
+</div>
+<div class="rec-shell">
+<div class="rec-bar"><i></i><i></i><i></i><span class="rec-title">Tuboteca: tu catálogo de YouTube, en local · asciinema</span><span class="rec-rec"><b></b>REC</span></div>
+<div class="rec-screen-wrap">
+<div class="rec-screen" id="rec-screen"></div>
+<div class="rec-poster" id="rec-poster">
+<div class="rec-kicker">ASCIINEMA · 2:55</div>
+<h3>Tuboteca: tu catálogo de YouTube, en local</h3>
+<p>Un catálogo de canales de YouTube con estética de escritorio: puntos verdes y rojos, carpetas anidadas y un reproductor integrado. El video recorre el servidor Node sin dependencias, la resolución de enlaces, las tres vías para leer el feed, la caché de diez minutos y la persistencia atómica en JSON.</p>
+<div class="rec-poster-meta">tuboteca · código real</div>
+<button class="rec-btn rec-primary" id="rec-start" type="button">▶ Reproducir</button>
+</div>
+</div>
+<div class="rec-controls">
+<button class="rec-btn rec-primary" id="rec-play" type="button">▶ Reproducir</button>
+<button class="rec-btn" id="rec-restart" type="button">↺ Reiniciar</button>
+<input class="rec-progress" id="rec-range" type="range" min="0" max="1000" value="0" aria-label="Progreso"/>
+<span class="rec-time" id="rec-time">0:00 / 2:55</span>
+<select class="rec-speed" id="rec-speed" aria-label="Velocidad"><option value="1">1×</option><option value="1.25">1.25×</option><option value="1.5">1.5×</option><option value="2">2×</option></select>
+<button class="rec-btn" id="rec-full" type="button" title="Pantalla completa">⛶</button>
+<button class="rec-btn" id="rec-copy" type="button">⧉ Copiar comandos</button>
+<a class="rec-download" href="rec/tuboteca.cast" download>descargar .cast</a>
+</div>
+</div>
+<p class="rec-note">Los fragmentos son del código real del repositorio. El catálogo, los nombres de canales y el historial son datos locales que no se incluyen en el video ni en el repositorio.</p>
+<div class="rec-chapters"><span class="rec-chip"><b>0:06</b> EL PROBLEMA</span><span class="rec-chip"><b>0:20</b> ARQUITECTURA</span><span class="rec-chip"><b>0:34</b> API DE CANALES</span><span class="rec-chip"><b>0:49</b> LECTURA DEL FEED</span><span class="rec-chip"><b>1:04</b> EL PARSER</span><span class="rec-chip"><b>1:20</b> CACHÉ</span><span class="rec-chip"><b>1:36</b> ESTADO</span><span class="rec-chip"><b>1:50</b> LA INTERFAZ</span><span class="rec-chip"><b>2:04</b> PERSISTENCIA</span><span class="rec-chip"><b>2:20</b> SERVIDOR HTTP</span><span class="rec-chip"><b>2:33</b> CÓMO EJECUTARLO</span></div>
+</div>
+</section>
+
+<section class="section" id="docs"><div class="wrap">
+  <div class="section-head"><div class="kicker">06 — Documentación</div><h2>Todo está escrito.</h2><p class="section-sub">Del arranque rápido a las decisiones de ingeniería: qué hace, cómo se opera y dónde están los límites.</p></div>
+  <table class="doctable"><thead><tr><th>Documento</th><th>Qué encontrarás</th><th></th></tr></thead><tbody><tr><td>README</td><td>Arranque, canales, API y límites.</td><td><a href="../README.md">Abrir</a></td></tr>
+<tr><td>Datasheet</td><td>Qué hace y cómo se opera.</td><td><a href="datasheet.md">Leer</a></td></tr>
+<tr><td>Developer</td><td>Parser, caché, endpoints y estado.</td><td><a href="developer.md">Leer</a></td></tr></tbody></table>
+</div></section>
+<section class="section" id="limites"><div class="wrap">
+  <div class="section-head"><div class="kicker">07 — Límites y decisiones</div><h2>Lo que no promete.</h2><p class="section-sub">Un proyecto serio también se explica por lo que deja fuera.</p></div>
+  <div class="limits"><div class="limit"><b>Sin API oficial</b><span>Depende del HTML público de YouTube. Si cambia, el parser puede necesitar ajustes.</span></div>
+<div class="limit"><b>Datos demo</b><span>Los canales incluidos son públicos y sirven de ejemplo; no son suscripciones personales.</span></div>
+<div class="limit"><b>Sin descargas</b><span>Reproduce con el reproductor nocookie; no descarga videos.</span></div>
+<div class="limit"><b>Un usuario</b><span>No hay multiusuario ni autenticación: es una biblioteca local.</span></div></div>
+  <details open style="margin-top:22px;border:1px solid var(--line);border-radius:14px;padding:16px;background:rgba(11,34,43,.55)"><summary style="cursor:pointer;font-weight:600">Preguntas típicas</summary><div style="margin-top:10px"><details><summary>¿Necesito una API key?</summary><p>No. La app lee la página pública y usa la API interna como respaldo.</p></details>
+<details><summary>¿Dónde se guardan mis canales?</summary><p>En `data/channels.json`, local. El repo publica una versión demo.</p></details>
+<details><summary>¿Qué pasa si YouTube cambia?</summary><p>El parser puede fallar; la caché stale mantiene la última lista disponible.</p></details>
+<details><summary>¿Puedo crear carpetas?</summary><p>Sí, el árbol permite anidar carpetas y mover canales.</p></details></div></details>
+</div></section>
+<section class="cta"><div class="wrap"><div><h2>¿Lo probamos?</h2><p>El código, la documentación y las capturas están en el repositorio.</p></div><a class="btn btn-primary" href="https://github.com/jmadasme/tuboteca" target="_blank" rel="noopener">Abrir en GitHub</a></div></section>
+</main>
+<footer class="footer"><div class="wrap"><span>Tuboteca · Tuboteca</span><span>jmadasme · Software &amp; IA · <a href="/software/">volver al catálogo</a></span></div></footer>
+<script>window.PORTFOLIO_COMMUNITY={"account": "jmadasme", "repo": "tuboteca", "coinNamespace": "jmadasme-tuboteca-coins-v1", "faqs": [{"q": "¿Necesito una API key?", "a": "No. La app lee la página pública y usa la API interna como respaldo."}, {"q": "¿Dónde se guardan mis canales?", "a": "En `data/channels.json`, local. El repo publica una versión demo."}, {"q": "¿Qué pasa si YouTube cambia?", "a": "El parser puede fallar; la caché stale mantiene la última lista disponible."}, {"q": "¿Puedo crear carpetas?", "a": "Sí, el árbol permite anidar carpetas y mover canales."}]};</script>
+<script defer src="assets/community.js?v=6"></script>
+<script defer src="rec/tuboteca.cast.js?v=1"></script>
+<script defer src="rec/player.js?v=1"></script>
+</body>
+</html>
